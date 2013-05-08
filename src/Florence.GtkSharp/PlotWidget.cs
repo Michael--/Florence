@@ -42,6 +42,7 @@ using Florence;
 
 namespace Florence.GtkSharp
 {
+    [System.ComponentModel.ToolboxItem(true)]
     public class PlotWidget : DrawingArea, IPlotWidget
     {
         #region boilerplate constructors
@@ -65,7 +66,7 @@ namespace Florence.GtkSharp
         #endregion
 
         #region fields
-        bool Allocated = false;
+        // bool Allocated = false;
         InteractivePlotSurface2D plotSurface;
         #endregion 
 
@@ -290,7 +291,7 @@ namespace Florence.GtkSharp
         }
         void PlotWidget_SizeAllocated(object o, SizeAllocatedArgs args)
         {
-            this.Allocated = true;
+            // this.Allocated = true;
             this.QueueDraw();
         }
 
