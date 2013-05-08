@@ -542,9 +542,9 @@ namespace Florence
       /// the PlotSurface2D axes will also be updated. 
       /// </summary>
       /// <param name="p">The IDrawable object to add to the plot surface.</param>
-      public void Add(IDrawable p, bool updateAxis = true)
+      public void Add(IDrawable p)
       {
-         Add(p, 0, updateAxis);
+         Add(p, 0);
       }
 
 
@@ -554,9 +554,9 @@ namespace Florence
       /// </summary>
       /// <param name="p">The IDrawable object to add to the plot surface.</param>
       /// <param name="zOrder">The z-ordering when drawing (objects with lower numbers are drawn first)</param>
-      public void Add(IDrawable p, int zOrder, bool updateAxis = true)
+      public void Add(IDrawable p, int zOrder)
       {
-         Add(p, XAxisPosition.Bottom, YAxisPosition.Left, zOrder, updateAxis);
+         Add(p, XAxisPosition.Bottom, YAxisPosition.Left, zOrder);
       }
 
 
@@ -568,9 +568,9 @@ namespace Florence
       /// <param name="p">the IDrawable object to add to the plot surface</param>
       /// <param name="xp">the x-axis to add the plot against.</param>
       /// <param name="yp">the y-axis to add the plot against.</param>
-      public void Add(IDrawable p, XAxisPosition xp, YAxisPosition yp, bool updateAxis)
+      public void Add(IDrawable p, XAxisPosition xp, YAxisPosition yp)
       {
-         Add(p, xp, yp, 0, updateAxis);
+         Add(p, xp, yp, 0);
       }
 
 
@@ -582,7 +582,7 @@ namespace Florence
       /// <param name="xp">the x-axis to add the plot against.</param>
       /// <param name="yp">the y-axis to add the plot against.</param>
       /// <param name="zOrder">The z-ordering when drawing (objects with lower numbers are drawn first)</param>
-      public void Add(IDrawable p, XAxisPosition xp, YAxisPosition yp, int zOrder, bool updateAxis = true)
+      public void Add(IDrawable p, XAxisPosition xp, YAxisPosition yp, int zOrder)
       {
          drawables_.Add(p);
          xAxisPositions_.Add(xp);
@@ -593,7 +593,7 @@ namespace Florence
          ordering_.Add((double)zOrder + fraction, drawables_.Count - 1);
 
          // if p is just an IDrawable, then it can't affect the axes.
-         if (updateAxis && p is IPlot)
+         if (p is IPlot)
          {
             UpdateAxes(false);
          }
@@ -602,7 +602,7 @@ namespace Florence
       private int uniqueCounter_ = 0;
 
 
-      private void UpdateAxes(bool recalculateAll)
+      public void UpdateAxes(bool recalculateAll)
       {
          if (drawables_.Count != xAxisPositions_.Count || drawables_.Count != yAxisPositions_.Count)
          {

@@ -50,7 +50,7 @@ namespace Florence
       /// </summary>
       /// <param name="p">The IDrawable object to add to the plot surface.</param>
       /// <param name="zOrder">The z-ordering when drawing (objects with lower numbers are drawn first)</param>
-      void Add(IDrawable p, int zOrder, bool updateAxis = true);
+      void Add(IDrawable p, int zOrder);
 
 
       /// <summary>
@@ -61,7 +61,7 @@ namespace Florence
       /// <param name="xp">the x-axis to add the plot against.</param>
       /// <param name="yp">the y-axis to add the plot against.</param>
       /// <param name="zOrder">The z-ordering when drawing (objects with lower numbers are drawn first)</param>
-      void Add(IDrawable p, Florence.PlotSurface2D.XAxisPosition xp, Florence.PlotSurface2D.YAxisPosition yp, int zOrder, bool updateAxis = true);
+      void Add(IDrawable p, Florence.PlotSurface2D.XAxisPosition xp, Florence.PlotSurface2D.YAxisPosition yp, int zOrder);
 
 
       /// <summary>
@@ -69,7 +69,7 @@ namespace Florence
       /// the PlotSurface2D axes will also be updated.
       /// </summary>
       /// <param name="p">The IDrawable object to add to the plot surface.</param>
-      void Add(IDrawable p, bool updateAxis = true);
+      void Add(IDrawable p);
 
 
       /// <summary>
@@ -79,7 +79,7 @@ namespace Florence
       /// <param name="p">the IDrawable object to add to the plot surface</param>
       /// <param name="xax">the x-axis to add the plot against.</param>
       /// <param name="yax">the y-axis to add the plot against.</param>
-      void Add(IDrawable p, Florence.PlotSurface2D.XAxisPosition xax, Florence.PlotSurface2D.YAxisPosition yax, bool updateAxis = true);
+      void Add(IDrawable p, Florence.PlotSurface2D.XAxisPosition xax, Florence.PlotSurface2D.YAxisPosition yax);
 
 
       /// <summary>

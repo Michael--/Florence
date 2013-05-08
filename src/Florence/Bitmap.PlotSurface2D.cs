@@ -92,9 +92,9 @@ namespace Florence.Bitmap
       /// the PlotSurface2D axes will also be updated.
       /// </summary>
       /// <param name="p">The IDrawable object to add to the plot surface.</param>
-      public void Add(IDrawable p, bool updateAxis = true)
+      public void Add(IDrawable p)
       {
-         ps_.Add(p, updateAxis);
+         ps_.Add(p);
       }
 
 
@@ -105,9 +105,9 @@ namespace Florence.Bitmap
       /// <param name="p">the IDrawable object to add to the plot surface</param>
       /// <param name="xp">the x-axis to add the plot against.</param>
       /// <param name="yp">the y-axis to add the plot against.</param>
-      public void Add(IDrawable p, Florence.PlotSurface2D.XAxisPosition xp, Florence.PlotSurface2D.YAxisPosition yp, bool updateAxis)
+      public void Add(IDrawable p, Florence.PlotSurface2D.XAxisPosition xp, Florence.PlotSurface2D.YAxisPosition yp)
       {
-         ps_.Add(p, xp, yp, updateAxis);
+         ps_.Add(p, xp, yp);
       }
 
 
@@ -117,9 +117,9 @@ namespace Florence.Bitmap
       /// </summary>
       /// <param name="p">The IDrawable object to add to the plot surface.</param>
       /// <param name="zOrder">The z-ordering when drawing (objects with lower numbers are drawn first)</param>
-      public void Add(IDrawable p, int zOrder, bool updateAxis = true)
+      public void Add(IDrawable p, int zOrder)
       {
-         ps_.Add(p, zOrder, updateAxis);
+         ps_.Add(p, zOrder);
       }
 
 
@@ -132,7 +132,7 @@ namespace Florence.Bitmap
       /// <param name="yp">the y-axis to add the plot against.</param>
       /// <param name="zOrder">The z-ordering when drawing (objects with lower numbers are drawn first)</param>
       public void Add(IDrawable p, Florence.PlotSurface2D.XAxisPosition xp,
-         Florence.PlotSurface2D.YAxisPosition yp, int zOrder, bool updateAxis = true)
+         Florence.PlotSurface2D.YAxisPosition yp, int zOrder)
       {
          ps_.Add(p, xp, yp, zOrder);
       }

@@ -108,7 +108,7 @@ namespace DemoLib.PlotSurface2DDemo
             pp.OrdinateData = y;
             pp.AbscissaData = x;
             pp.Marker = new Marker(Marker.MarkerType.FilledCircle, 4, new Pen(Color.Blue));
-            plotSurface.Add(pp, PlotSurface2D.XAxisPosition.Bottom, PlotSurface2D.YAxisPosition.Left, true);
+            plotSurface.Add(pp, PlotSurface2D.XAxisPosition.Bottom, PlotSurface2D.YAxisPosition.Left);
 
             // set axes
             LinearAxis lx = (LinearAxis)plotSurface.XAxis1;
@@ -130,7 +130,7 @@ namespace DemoLib.PlotSurface2DDemo
             LinePlot lp = new LinePlot();
             lp.OrdinateData = yeli;
             lp.AbscissaData = xeli;
-            plotSurface.Add(lp, PlotSurface2D.XAxisPosition.Bottom, PlotSurface2D.YAxisPosition.Left, true);
+            plotSurface.Add(lp, PlotSurface2D.XAxisPosition.Bottom, PlotSurface2D.YAxisPosition.Left);
             lp.Pen = new Pen(Color.Red, 2.0f);
             // Draws the ellipse containing 100% of the particles
             // for a uniform distribution in 2D the area is 4 times the rms
@@ -141,7 +141,7 @@ namespace DemoLib.PlotSurface2DDemo
             LinePlot lp2 = new LinePlot();
             lp2.OrdinateData = yeli2;
             lp2.AbscissaData = xeli2;
-            plotSurface.Add(lp2, PlotSurface2D.XAxisPosition.Bottom, PlotSurface2D.YAxisPosition.Left, true);
+            plotSurface.Add(lp2, PlotSurface2D.XAxisPosition.Bottom, PlotSurface2D.YAxisPosition.Left);
             Pen p2 = new Pen(Color.Red, 2.0f);
             float[] pattern = { 5.0f, 40.0f };
             p2.DashPattern = pattern;
@@ -176,7 +176,7 @@ namespace DemoLib.PlotSurface2DDemo
             sp.OrdinateData = xh;
             sp.AbscissaData = new StartStep(min, range / Nbin);
             sp.Center = true;
-            plotSurface.Add(sp, PlotSurface2D.XAxisPosition.Bottom, PlotSurface2D.YAxisPosition.Right, true);
+            plotSurface.Add(sp, PlotSurface2D.XAxisPosition.Bottom, PlotSurface2D.YAxisPosition.Right);
             // axis formatting
             LinearAxis ly2 = (LinearAxis)plotSurface.YAxis2;
             ly2.WorldMin = 0.0f;
