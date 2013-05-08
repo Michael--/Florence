@@ -129,7 +129,7 @@ namespace Florence
             // Draw a 'Google-Earth'-type Focus-point when zooming
             if (zoomActive)
             {
-                using (Pen rPen = new Pen(Color.White))
+                using (Pen rPen = new Pen(Color.LightGray))
                 {
                     Rectangle r1 = new Rectangle(p.X - 15, p.Y - 15, 32, 32);
                     g.DrawArc(rPen, r1, 0, 360);
