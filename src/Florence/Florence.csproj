@@ -6,7 +6,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{E6867FF5-74EC-4464-8958-D71CB46232F3}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <AssemblyName>Florence</AssemblyName>
     <DelaySign>false</DelaySign>
     <OutputType>Library</OutputType>
@@ -44,20 +44,6 @@
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <OutputPath>..\..\bin\$(Configuration)\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;CHECK_ERRORS</DefineConstants>
-    <DebugSymbols>true</DebugSymbols>
-    <Optimize>false</Optimize>
-    <DebugType>full</DebugType>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <OutputPath>..\..\bin\$(Configuration)\</OutputPath>
-    <DefineConstants>TRACE;RELEASE</DefineConstants>
-    <DocumentationFile>Florence.xml</DocumentationFile>
-    <Optimize>true</Optimize>
-    <DebugType>none</DebugType>
   </PropertyGroup>
   <PropertyGroup>
     <AssemblyOriginatorKeyFile>..\..\NPlot-key.snk</AssemblyOriginatorKeyFile>
