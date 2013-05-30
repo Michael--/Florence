@@ -52,8 +52,8 @@ namespace Florence
         /// <summary>
         /// Constructor
         /// </summary>
-        /// <param name="horizontal">enable horizontal drag/param>
-        /// <param name="vertical">enable vertical drag/param>
+        /// <param name="horizontal">enable horizontal drag</param>
+        /// <param name="vertical">enable vertical drag</param>
         public PlotDrag(bool horizontal, bool vertical)
         {
             Vertical = vertical;

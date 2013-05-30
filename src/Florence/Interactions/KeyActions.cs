@@ -77,7 +77,7 @@ namespace Florence
         /// <summary>
         /// Handler for KeyPress events
         /// </summary>
-        /// <param name="key">the NPlot key enumeration</param>
+        /// <param name="keys">the NPlot key enumeration</param>
         /// <param name="ps">the InteractivePlotSurface2D</param>
         /// <returns></returns>
         public override bool DoKeyPress(Modifier keys, InteractivePlotSurface2D ps)
@@ -136,7 +136,7 @@ namespace Florence
         /// <summary>
         /// Handler for KeyRelease events
         /// </summary>
-        /// <param name="key">the NPlot key enumeration</param>
+        /// <param name="keys">the NPlot key enumeration</param>
         /// <param name="ps">the InteractivePlotSurface2D</param>
         /// <returns></returns>
         public override bool DoKeyRelease(Modifier keys, InteractivePlotSurface2D ps)
