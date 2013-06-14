@@ -154,7 +154,7 @@ namespace DemoLib.PlotSurface2DDemo
             range = max - min;
 
             const int Nbin = 30;
-            float dx = range / Nbin;
+            // float dx = range / Nbin;
             float[] xbin = new float[Nbin + 1];
             float[] xh = new float[Nbin + 1];
 
