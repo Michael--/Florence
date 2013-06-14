@@ -143,6 +143,7 @@
     </Compile>
     <Compile Include="ImagePlot.cs">
       <SubType>Code</SubType>
+      <DependentUpon>IPlot.cs</DependentUpon>
     </Compile>
     <Compile Include="ImperativeApi\BaseImperativeFigure.cs" />
     <Compile Include="ImperativeApi\BaseImperativeHost.cs" />
