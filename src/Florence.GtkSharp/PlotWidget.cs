@@ -205,24 +205,31 @@ namespace Florence.GtkSharp
                 case Gdk.Key.Home:
                 case Gdk.Key.KP_Home:
                     return Modifier.Home;
+
                 case Gdk.Key.KP_Add:
                 case Gdk.Key.plus:
                     return Modifier.Plus;
+
                 case Gdk.Key.KP_Subtract:
                 case Gdk.Key.minus:
                     return Modifier.Minus;
+
                 case Gdk.Key.KP_Left:
                 case Gdk.Key.Left:
                     return Modifier.Left;
+
                 case Gdk.Key.KP_Right:
                 case Gdk.Key.Right:
                     return Modifier.Right;
+
                 case Gdk.Key.KP_Up:
                 case Gdk.Key.Up:
                     return Modifier.Up;
+
                 case Gdk.Key.KP_Down:
                 case Gdk.Key.Down:
                     return Modifier.Down;
+
                 default:
                     return Modifier.None;
             }
