@@ -1,5 +1,5 @@
-Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual Studio Express 2013 for Windows Desktop
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlorenceDemo", "FlorenceDemo\FlorenceDemo.csproj", "{7427C7A7-6CB0-4CB3-A0DB-F11603C5C29A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Florence", "..\..\src\Florence\Florence.csproj", "{E6867FF5-74EC-4464-8958-D71CB46232F3}"
