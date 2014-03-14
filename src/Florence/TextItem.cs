@@ -102,7 +102,7 @@ namespace Florence
 		/// <param name="g">graphics surface on which to draw</param>
 		/// <param name="xAxis">The X-Axis to draw against.</param>
 		/// <param name="yAxis">The Y-Axis to draw against.</param>
-		public void Draw( System.Drawing.Graphics g, PhysicalAxis xAxis, PhysicalAxis yAxis )
+		public virtual void Draw( System.Drawing.Graphics g, PhysicalAxis xAxis, PhysicalAxis yAxis )
 		{
 			Point startPoint = new Point( 
 				(int)xAxis.WorldToPhysical( start_.X, true ).X,
