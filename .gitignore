@@ -1,4 +1,6 @@
 *.csproj.user
 *.suo
+*.pdb
+*.pidb
 /bin/
 /obj/
