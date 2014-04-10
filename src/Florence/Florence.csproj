@@ -22,7 +22,7 @@
     <RemoveIntegerChecks>false</RemoveIntegerChecks>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <WarningLevel>4</WarningLevel>
-    <ErrorReport>prompt</ErrorReport>
+    <ErrorReport>none</ErrorReport>
     <BaseFX1_1OutputPath>bin\net\1.1\</BaseFX1_1OutputPath>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
