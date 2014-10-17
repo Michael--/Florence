@@ -281,21 +281,22 @@ namespace Florence.GtkSharp
             //Rectangle clip = new Rectangle(area.X, area.Y, area.Width, area.Height);
 
             // This one makes single plot examples work, but multiplot even more broken
-            Rectangle clip = new Rectangle(this.Allocation.Left, this.Allocation.Top, this.Allocation.Width, this.Allocation.Height);
+            //Rectangle clip = new Rectangle(this.Allocation.Left, this.Allocation.Top, this.Allocation.Width, this.Allocation.Height);
 
-            var window_info = this.WindowPositionAndSize(window);
+            // This one works just fine
+            Rectangle clip = this.DrawingAreaRect(window);
             
             using (Graphics g = Gtk.DotNet.Graphics.FromDrawable(window, true))
             {
                 this.InteractivePlotSurface2D.DoDraw(g, clip);
             }
         }                
-        Rectangle WindowPositionAndSize(Gdk.Window window)
+        Rectangle DrawingAreaRect(Gdk.Window window)
         {
-            int x,y,width,height;
-            window.GetPosition(out x, out y);
+            int width;
+            int height;
             window.GetSize(out width, out height);
-            return new Rectangle(x,y,width,height);
+            return new Rectangle(0, 0, width, height);
         }
         void PlotWidget_SizeAllocated(object o, SizeAllocatedArgs args)
         {
