@@ -165,6 +165,13 @@ namespace Florence.GtkSharp
             int X, Y;
             Gdk.ModifierType state;
 
+            // Ensure PlotSurface has keyboard focus
+            DrawingArea da = (DrawingArea)o;
+            if (!da.HasFocus)
+            {
+               da.GrabFocus();
+            }
+
             args.Event.Window.GetPointer(out X, out Y, out state);
             Modifier keys = MouseInput(state);
             this.InteractivePlotSurface2D.DoMouseUp(X, Y, keys);
@@ -174,13 +181,6 @@ namespace Florence.GtkSharp
         {
             int X, Y;
             Gdk.ModifierType state;
-
-            // Ensure PlotSurface has keyboard focus
-            DrawingArea da = (DrawingArea)o;
-            if (!da.HasFocus)
-            {
-                da.GrabFocus();
-            }
 
             args.Event.Window.GetPointer(out X, out Y, out state);
             Modifier keys = MouseInput(state);
@@ -266,8 +266,9 @@ namespace Florence.GtkSharp
 
         void PlotWidget_EnterNotifyEvent(object o, EnterNotifyEventArgs args)
         {
-            if (!this.HasFocus)
-                this.GrabFocus();
+            // Don't steal focus on hover!
+            //if (!this.HasFocus)
+            //    this.GrabFocus();
             this.InteractivePlotSurface2D.DoMouseEnter(args);
         }
 
