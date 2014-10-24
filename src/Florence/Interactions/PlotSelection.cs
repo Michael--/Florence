@@ -80,6 +80,7 @@ namespace Florence
                 startPoint.X = X;
                 startPoint.Y = Y;
                 endPoint = startPoint;
+                selection = FromPoints(startPoint, endPoint);
             }
             return false;
         }
