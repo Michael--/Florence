@@ -1050,25 +1050,29 @@ namespace Florence
          bbYAxis2Cache_ = pYAxis2.GetBoundingBox();
 
          // Fill in the background. 
-         if (this.plotBackColor_ != null)
+         if (((Rectangle)plotAreaBoundingBoxCache_).Height > 0
+            && ((Rectangle)plotAreaBoundingBoxCache_).Width > 0)
          {
-            g.FillRectangle(
-               new System.Drawing.SolidBrush((Color)this.plotBackColor_),
-               (Rectangle)plotAreaBoundingBoxCache_);
-         }
-         else if (this.plotBackBrush_ != null)
-         {
-            g.FillRectangle(
-               this.plotBackBrush_.Get((Rectangle)plotAreaBoundingBoxCache_),
-               (Rectangle)plotAreaBoundingBoxCache_);
-         }
-         else if (this.plotBackImage_ != null)
-         {
-            g.DrawImage(
-               Utils.TiledImage(this.plotBackImage_, new Size(
-                  ((Rectangle)plotAreaBoundingBoxCache_).Width,
-                  ((Rectangle)plotAreaBoundingBoxCache_).Height)),
-               (Rectangle)plotAreaBoundingBoxCache_);
+            if (this.plotBackColor_ != null)
+            {
+               g.FillRectangle(
+                  new System.Drawing.SolidBrush((Color)this.plotBackColor_),
+                  (Rectangle)plotAreaBoundingBoxCache_);
+            }
+            else if (this.plotBackBrush_ != null)
+            {
+               g.FillRectangle(
+                  this.plotBackBrush_.Get((Rectangle)plotAreaBoundingBoxCache_),
+                  (Rectangle)plotAreaBoundingBoxCache_);
+            }
+            else if (this.plotBackImage_ != null)
+            {
+               g.DrawImage(
+                  Utils.TiledImage(this.plotBackImage_, new Size(
+                     ((Rectangle)plotAreaBoundingBoxCache_).Width,
+                     ((Rectangle)plotAreaBoundingBoxCache_).Height)),
+                  (Rectangle)plotAreaBoundingBoxCache_);
+            }
          }
 
          // draw title
