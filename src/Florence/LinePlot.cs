@@ -95,8 +95,8 @@ namespace Florence
 			ITransform2D t = Transform2D.GetTransformer( xAxis, yAxis );
 			
 			int numberPoints = data.Count;
-			
-			if (data.Count == 0)
+
+         if (numberPoints == 0)
 			{
 				return;
 			}
@@ -130,62 +130,41 @@ namespace Florence
 					Utils.Swap(ref leftCutoff, ref rightCutoff);
 				}
 				if (drawShadow)
-                {
-                    // correct cut-offs
-                    double shadowCorrection =
-                        xAxis.PhysicalToWorld(ShadowOffset, false) - xAxis.PhysicalToWorld(new Point(0,0), false);
-                    leftCutoff -= shadowCorrection;
-                    rightCutoff -= shadowCorrection;
-                }
+            {
+               // correct cut-offs
+               double shadowCorrection =
+                  xAxis.PhysicalToWorld(ShadowOffset, false) - xAxis.PhysicalToWorld(new Point(0,0), false);
+               leftCutoff -= shadowCorrection;
+               rightCutoff -= shadowCorrection;
+            }
 
-                for (int i = 1; i < numberPoints; ++i)
-				{
-					// check to see if any values null. If so, then continue.
-					double dx1 = data[i-1].X;
-					double dx2 = data[i].X;
-					double dy1 = data[i-1].Y;
-					double dy2 = data[i].Y;
-					if ( Double.IsNaN(dx1) || Double.IsNaN(dy1) ||
-						Double.IsNaN(dx2) || Double.IsNaN(dy2) )
-					{
-						continue;
-					}
+            // Extract points to draw
+            int minPoint = 0;
+            int maxPoint = 0;
+            Utils.AdapterXBounds(data, leftCutoff, rightCutoff, out minPoint, out maxPoint);
 
-                    // do horizontal clipping here, to speed up
-                    if ((dx1 < leftCutoff && dx2 < leftCutoff) ||
-                        (rightCutoff < dx1 && rightCutoff < dx2))
-                    {
-                        continue;
-                    }
+            // Translate points to drawing coordinates
+            PointF[] points = new PointF[maxPoint + 1 - minPoint];
+            for (int i = 0; i < points.Length; ++i)
+            {
+               points[i] = t.Transform(data[minPoint + i]);
+            }
 
-					// else draw line.  
-					PointF p1 = t.Transform( data[i-1] );
-					PointF p2 = t.Transform( data[i] );
-                    
-                    // when very far zoomed in, points can fall ontop of each other,
-                    // and g.DrawLine throws an overflow exception
-                    if (p1.Equals(p2))
-                    {
-                        continue;
-                    }
-
-					if (drawShadow)
-					{
-						g.DrawLine( shadowPen, 
-							p1.X + ShadowOffset.X,
-							p1.Y + ShadowOffset.Y,
-							p2.X + ShadowOffset.X,
-							p2.Y + ShadowOffset.Y );
-					}
-					else
-					{
-                        // Ensure that we do not go outside of the graphics capabilities
-                        if ((Math.Abs(p1.X) + Math.Abs(p2.X)) < 0x4000007F && (Math.Abs(p1.Y) + Math.Abs(p2.Y)) < 0x4000007F)
-                        {
-                            g.DrawLine(Pen, p1.X, p1.Y, p2.X, p2.Y);
-                        }
-					}
-				}
+            // Draw lines in one api call
+            try
+            {
+               if (drawShadow)
+               {
+                  PointF[] shadowPoints = new PointF[points.Length];
+                  for (int i = 0; i < shadowPoints.Length; ++i)
+                  {
+                     shadowPoints[i].X = points[i].X + ShadowOffset.X;
+                     shadowPoints[i].Y = points[i].Y + ShadowOffset.Y;
+                  }
+                  g.DrawLines(shadowPen, shadowPoints);
+               }
+               g.DrawLines(Pen, points);
+            } catch (System.OverflowException) { }
 			}
 		}
 

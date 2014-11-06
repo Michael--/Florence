@@ -295,6 +295,37 @@ namespace Florence
 			return true;
 		}
 
+      /// <summary>
+      /// Returns array indices for values inside the given bounds for an ordered x value sequence adapter.
+      /// </summary>
+      /// <param name="a">Adapter providing the data.</param>
+      /// <param name="minBound">lower boundary</param>
+      /// <param name="maxBound">upper boundary</param>
+      /// <param minIndex="maxBound">minimum Index inside boundary </param>
+      /// <param maxIndex="maxBound">maximum index inside boundary </param>
+      public static void AdapterXBounds(SequenceAdapter a, double minBound, double maxBound, out int minIndex, out int maxIndex)
+      {
+         minIndex = 0;
+         maxIndex = a.Count - 1;
+         for (int i = 1; i < a.Count; ++i)
+         {
+            PointD d1 = a[i - 1];
+            PointD d2 = a[i];
+
+            bool isValid = !Double.IsNaN(d1.X) && !Double.IsNaN(d1.Y) && !Double.IsNaN(d2.X) && !Double.IsNaN(d2.Y);
+
+            if (!isValid || (d1.X < minBound && d2.X < minBound))
+            {
+               minIndex = i;
+            }
+
+            if (isValid && (d1.X < maxBound || d2.X < maxBound))
+            {
+               maxIndex = Math.Max(minIndex, i);
+            }
+         }
+      }
+
 
 		/// <summary>
 		/// Returns unit vector along the line  a->b.
