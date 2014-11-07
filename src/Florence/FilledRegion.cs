@@ -117,21 +117,42 @@ namespace Florence
             }
             else if (lp1_ != null && lp2_ != null)
             {
-                SequenceAdapter a1 = new SequenceAdapter(lp1_.DataSource, lp1_.DataMember, lp1_.OrdinateData, lp1_.AbscissaData);
-                SequenceAdapter a2 = new SequenceAdapter(lp2_.DataSource, lp2_.DataMember, lp2_.OrdinateData, lp2_.AbscissaData);
+               // prepare for clipping
+               double leftCutoff = xAxis.PhysicalToWorld(xAxis.PhysicalMin, false);
+               double rightCutoff = xAxis.PhysicalToWorld(xAxis.PhysicalMax, false);
+               if (leftCutoff > rightCutoff)
+               {
+               Utils.Swap(ref leftCutoff, ref rightCutoff);
+               }
 
-                int count = a1.Count + a2.Count;
-                PointF[] points = new PointF[count];
-                for (int i = 0; i < a1.Count; ++i)
-                {
-                    points[i] = t.Transform(a1[i]);
-                }
-                for (int i = 0; i < a2.Count; ++i)
-                {
-                    points[i + a1.Count] = t.Transform(a2[a2.Count - i - 1]);
-                }
+               SequenceAdapter a1 = new SequenceAdapter(lp1_.DataSource, lp1_.DataMember, lp1_.OrdinateData, lp1_.AbscissaData);
+               SequenceAdapter a2 = new SequenceAdapter(lp2_.DataSource, lp2_.DataMember, lp2_.OrdinateData, lp2_.AbscissaData);
 
-                g.FillPolygon(b, points);
+               // Extract points to draw
+               int minPointA1 = 0;
+               int maxPointA1 = 0;
+               Utils.AdapterXBounds(a1, leftCutoff, rightCutoff, out minPointA1, out maxPointA1);
+               int minPointA2 = 0;
+               int maxPointA2 = a2.Count - 1;
+               Utils.AdapterXBounds(a2, leftCutoff, rightCutoff, out minPointA2, out maxPointA2);
+
+               int countA1 = maxPointA1 + 1 - minPointA1;
+               int countA2 = maxPointA2 + 1 - minPointA2;
+               PointF[] points = new PointF[countA1 + countA2];
+               for (int i = 0; i < countA1; ++i)
+               {
+                  points[i] = t.Transform(a1[minPointA1 + i]);
+               }
+               for (int i = 0; i < countA2; ++i)
+               {
+                  points[countA1 + i] = t.Transform(a2[maxPointA2 - i]);
+               }
+
+               try
+               {
+                  g.FillPolygon(b, points);
+               }
+               catch (System.OverflowException) { }
             }
             else
             {

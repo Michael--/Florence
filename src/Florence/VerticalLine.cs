@@ -190,9 +190,13 @@ namespace Florence
 			yMin -= (int)indentAmount;
 			yMax += (int)indentAmount;
 
-			int xPos = (int)xAxis.WorldToPhysical( value_, false ).X;
-		
-			g.DrawLine( pen_, new System.Drawing.Point( xPos, yMin ), new System.Drawing.Point( xPos, yMax ) );
+         int xPos = (int)xAxis.WorldToPhysical( value_, false ).X;
+
+         try
+         {
+            g.DrawLine(pen_, new System.Drawing.Point(xPos, yMin), new System.Drawing.Point(xPos, yMax));
+         }
+         catch (System.OverflowException) { }
 
 			// todo:  clip and proper logic for flipped axis min max.
 		}
