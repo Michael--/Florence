@@ -121,6 +121,8 @@ namespace Florence
 
       private Legend legend_;
 
+      public Object LockObject = new object(); // could be locked to avoid threading issues
+
 
       /// <summary>
       /// The physical bounding box of the last drawn plot surface area is available here.
@@ -925,255 +927,257 @@ namespace Florence
       /// surface to confine drawing to.</param>
       public void Draw(Graphics g, Rectangle bounds)
       {
-         // Draw background            
-         if (outerBackColor != null && outerBackColor != Color.Transparent)
-            g.FillRectangle(new SolidBrush(outerBackColor.Value), bounds);
-         else if (outerBackColor == null)
+         lock (LockObject)
          {
-            if (plotBackColor_ != null)
-               g.FillRectangle(new SolidBrush(plotBackColor_.Value), bounds);
-            else if (plotBackBrush_ != null)
-               g.FillRectangle(plotBackBrush_.Get(bounds), bounds);
-            else
-               g.FillRectangle(new SolidBrush(Color.White), bounds);
-         }
-
-         // determine font sizes and tick scale factor.
-         float scale = DetermineScaleFactor(bounds.Width, bounds.Height);
-
-         // if there is nothing to plot, return.
-         if (drawables_.Count == 0)
-         {
-            // draw title
-            float x_center = (bounds.Left + bounds.Right) / 2.0f;
-            float y_center = (bounds.Top + bounds.Bottom) / 2.0f;
-            Font scaled_font;
-            if (this.AutoScaleTitle)
+            // Draw background            
+            if (outerBackColor != null && outerBackColor != Color.Transparent)
+               g.FillRectangle(new SolidBrush(outerBackColor.Value), bounds);
+            else if (outerBackColor == null)
             {
-               scaled_font = Utils.ScaleFont(titleFont_, scale);
+               if (plotBackColor_ != null)
+                  g.FillRectangle(new SolidBrush(plotBackColor_.Value), bounds);
+               else if (plotBackBrush_ != null)
+                  g.FillRectangle(plotBackBrush_.Get(bounds), bounds);
+               else
+                  g.FillRectangle(new SolidBrush(Color.White), bounds);
             }
-            else
+
+            // determine font sizes and tick scale factor.
+            float scale = DetermineScaleFactor(bounds.Width, bounds.Height);
+
+            // if there is nothing to plot, return.
+            if (drawables_.Count == 0)
             {
-               scaled_font = titleFont_;
-            }
-            g.DrawString(title_, scaled_font, this.titleBrush_, new PointF(x_center, y_center), titleDrawFormat_);
-
-            return;
-         }
-
-         // determine the [non physical] axes to draw based on the axis properties set.
-         Axis xAxis1 = null;
-         Axis xAxis2 = null;
-         Axis yAxis1 = null;
-         Axis yAxis2 = null;
-         this.DetermineAxesToDraw(out xAxis1, out xAxis2, out yAxis1, out yAxis2);
-
-         // apply scale factor to axes as desired.
-
-         if (xAxis1.AutoScaleTicks)
-         {
-            xAxis1.TickScale = scale;
-         }
-         if (xAxis1.AutoScaleText)
-         {
-            xAxis1.FontScale = scale;
-         }
-         if (yAxis1.AutoScaleTicks)
-         {
-            yAxis1.TickScale = scale;
-         }
-         if (yAxis1.AutoScaleText)
-         {
-            yAxis1.FontScale = scale;
-         }
-         if (xAxis2.AutoScaleTicks)
-         {
-            xAxis2.TickScale = scale;
-         }
-         if (xAxis2.AutoScaleText)
-         {
-            xAxis2.FontScale = scale;
-         }
-         if (yAxis2.AutoScaleTicks)
-         {
-            yAxis2.TickScale = scale;
-         }
-         if (yAxis2.AutoScaleText)
-         {
-            yAxis2.FontScale = scale;
-         }
-
-         // determine the default physical positioning of those axes.
-         PhysicalAxis pXAxis1 = null;
-         PhysicalAxis pYAxis1 = null;
-         PhysicalAxis pXAxis2 = null;
-         PhysicalAxis pYAxis2 = null;
-         this.DeterminePhysicalAxesToDraw(
-            bounds, xAxis1, xAxis2, yAxis1, yAxis2,
-            out pXAxis1, out pXAxis2, out pYAxis1, out pYAxis2);
-
-         float oldXAxis2Height = pXAxis2.PhysicalMin.Y;
-
-         // Apply axes constraints
-         for (int i = 0; i < axesConstraints_.Count; ++i)
-         {
-            ((AxesConstraint)axesConstraints_[i]).ApplyConstraint(
-               pXAxis1, pYAxis1, pXAxis2, pYAxis2);
-         }
-
-         /////////////////////////////////////////////////////////////////////////
-         // draw legend if have one.
-         // Note: this will update axes if necessary. 
-         Point legendPosition = new Point(0, 0);
-         if (this.legend_ != null)
-         {
-            legend_.UpdateAxesPositions(
-               pXAxis1, pYAxis1, pXAxis2, pYAxis2,
-               this.drawables_, scale, this.padding_, bounds,
-               out legendPosition);
-         }
-
-         float newXAxis2Height = pXAxis2.PhysicalMin.Y;
-         float titleExtraOffset = oldXAxis2Height - newXAxis2Height;
-
-         // now we are ready to define the bounding box for the plot area (to use in clipping
-         // operations.
-         plotAreaBoundingBoxCache_ = new Rectangle(
-            Math.Min(pXAxis1.PhysicalMin.X, pXAxis1.PhysicalMax.X),
-            Math.Min(pYAxis1.PhysicalMax.Y, pYAxis1.PhysicalMin.Y),
-            Math.Abs(pXAxis1.PhysicalMax.X - pXAxis1.PhysicalMin.X + 1),
-            Math.Abs(pYAxis1.PhysicalMin.Y - pYAxis1.PhysicalMax.Y + 1)
-         );
-         bbXAxis1Cache_ = pXAxis1.GetBoundingBox();
-         bbXAxis2Cache_ = pXAxis2.GetBoundingBox();
-         bbYAxis1Cache_ = pYAxis1.GetBoundingBox();
-         bbYAxis2Cache_ = pYAxis2.GetBoundingBox();
-
-         // Fill in the background. 
-         if (((Rectangle)plotAreaBoundingBoxCache_).Height > 0
-            && ((Rectangle)plotAreaBoundingBoxCache_).Width > 0)
-         {
-            if (this.plotBackColor_ != null)
-            {
-               g.FillRectangle(
-                  new System.Drawing.SolidBrush((Color)this.plotBackColor_),
-                  (Rectangle)plotAreaBoundingBoxCache_);
-            }
-            else if (this.plotBackBrush_ != null)
-            {
-               g.FillRectangle(
-                  this.plotBackBrush_.Get((Rectangle)plotAreaBoundingBoxCache_),
-                  (Rectangle)plotAreaBoundingBoxCache_);
-            }
-            else if (this.plotBackImage_ != null)
-            {
-               g.DrawImage(
-                  Utils.TiledImage(this.plotBackImage_, new Size(
-                     ((Rectangle)plotAreaBoundingBoxCache_).Width,
-                     ((Rectangle)plotAreaBoundingBoxCache_).Height)),
-                  (Rectangle)plotAreaBoundingBoxCache_);
-            }
-         }
-
-         // draw title
-         float xt = (pXAxis2.PhysicalMax.X + pXAxis2.PhysicalMin.X) / 2.0f;
-         float yt = bounds.Top + this.padding_ - titleExtraOffset;
-         Font scaledFont;
-         if (this.AutoScaleTitle)
-         {
-            scaledFont = Utils.ScaleFont(titleFont_, scale);
-         }
-         else
-         {
-            scaledFont = titleFont_;
-         }
-         g.DrawString(title_, scaledFont, this.titleBrush_, new PointF(xt, yt), titleDrawFormat_);
-
-         //count number of new lines in title.
-         int nlCount = 0;
-         for (int i = 0; i < title_.Length; ++i)
-         {
-            if (title_[i] == '\n')
-               nlCount += 1;
-         }
-
-         SizeF s = g.MeasureString(title_, scaledFont);
-         bbTitleCache_ = new Rectangle((int)(xt - s.Width / 2), (int)(yt), (int)(s.Width), (int)(s.Height) * (nlCount + 1));
-
-         // draw drawables..
-         System.Drawing.Drawing2D.SmoothingMode smoothSave = g.SmoothingMode;
-
-         g.SmoothingMode = this.smoothingMode_;
-
-         bool legendDrawn = false;
-
-         for (int i_o = 0; i_o < ordering_.Count; ++i_o)
-         {
-
-            int i = (int)ordering_.GetByIndex(i_o);
-            double zOrder = (double)ordering_.GetKey(i_o);
-            if (zOrder > this.legendZOrder_)
-            {
-               // draw legend.
-               if (!legendDrawn && this.legend_ != null)
+               // draw title
+               float x_center = (bounds.Left + bounds.Right) / 2.0f;
+               float y_center = (bounds.Top + bounds.Bottom) / 2.0f;
+               Font scaled_font;
+               if (this.AutoScaleTitle)
                {
-                  legend_.Draw(g, legendPosition, this.drawables_, scale);
-                  legendDrawn = true;
+                  scaled_font = Utils.ScaleFont(titleFont_, scale);
+               }
+               else
+               {
+                  scaled_font = titleFont_;
+               }
+               g.DrawString(title_, scaled_font, this.titleBrush_, new PointF(x_center, y_center), titleDrawFormat_);
+
+               return;
+            }
+
+            // determine the [non physical] axes to draw based on the axis properties set.
+            Axis xAxis1 = null;
+            Axis xAxis2 = null;
+            Axis yAxis1 = null;
+            Axis yAxis2 = null;
+            this.DetermineAxesToDraw(out xAxis1, out xAxis2, out yAxis1, out yAxis2);
+
+            // apply scale factor to axes as desired.
+
+            if (xAxis1.AutoScaleTicks)
+            {
+               xAxis1.TickScale = scale;
+            }
+            if (xAxis1.AutoScaleText)
+            {
+               xAxis1.FontScale = scale;
+            }
+            if (yAxis1.AutoScaleTicks)
+            {
+               yAxis1.TickScale = scale;
+            }
+            if (yAxis1.AutoScaleText)
+            {
+               yAxis1.FontScale = scale;
+            }
+            if (xAxis2.AutoScaleTicks)
+            {
+               xAxis2.TickScale = scale;
+            }
+            if (xAxis2.AutoScaleText)
+            {
+               xAxis2.FontScale = scale;
+            }
+            if (yAxis2.AutoScaleTicks)
+            {
+               yAxis2.TickScale = scale;
+            }
+            if (yAxis2.AutoScaleText)
+            {
+               yAxis2.FontScale = scale;
+            }
+
+            // determine the default physical positioning of those axes.
+            PhysicalAxis pXAxis1 = null;
+            PhysicalAxis pYAxis1 = null;
+            PhysicalAxis pXAxis2 = null;
+            PhysicalAxis pYAxis2 = null;
+            this.DeterminePhysicalAxesToDraw(
+               bounds, xAxis1, xAxis2, yAxis1, yAxis2,
+               out pXAxis1, out pXAxis2, out pYAxis1, out pYAxis2);
+
+            float oldXAxis2Height = pXAxis2.PhysicalMin.Y;
+
+            // Apply axes constraints
+            for (int i = 0; i < axesConstraints_.Count; ++i)
+            {
+               ((AxesConstraint)axesConstraints_[i]).ApplyConstraint(
+                  pXAxis1, pYAxis1, pXAxis2, pYAxis2);
+            }
+
+            /////////////////////////////////////////////////////////////////////////
+            // draw legend if have one.
+            // Note: this will update axes if necessary. 
+            Point legendPosition = new Point(0, 0);
+            if (this.legend_ != null)
+            {
+               legend_.UpdateAxesPositions(
+                  pXAxis1, pYAxis1, pXAxis2, pYAxis2,
+                  this.drawables_, scale, this.padding_, bounds,
+                  out legendPosition);
+            }
+
+            float newXAxis2Height = pXAxis2.PhysicalMin.Y;
+            float titleExtraOffset = oldXAxis2Height - newXAxis2Height;
+
+            // now we are ready to define the bounding box for the plot area (to use in clipping
+            // operations.
+            plotAreaBoundingBoxCache_ = new Rectangle(
+               Math.Min(pXAxis1.PhysicalMin.X, pXAxis1.PhysicalMax.X),
+               Math.Min(pYAxis1.PhysicalMax.Y, pYAxis1.PhysicalMin.Y),
+               Math.Abs(pXAxis1.PhysicalMax.X - pXAxis1.PhysicalMin.X + 1),
+               Math.Abs(pYAxis1.PhysicalMin.Y - pYAxis1.PhysicalMax.Y + 1)
+            );
+            bbXAxis1Cache_ = pXAxis1.GetBoundingBox();
+            bbXAxis2Cache_ = pXAxis2.GetBoundingBox();
+            bbYAxis1Cache_ = pYAxis1.GetBoundingBox();
+            bbYAxis2Cache_ = pYAxis2.GetBoundingBox();
+
+            // Fill in the background. 
+            if (((Rectangle)plotAreaBoundingBoxCache_).Height > 0
+               && ((Rectangle)plotAreaBoundingBoxCache_).Width > 0)
+            {
+               if (this.plotBackColor_ != null)
+               {
+                  g.FillRectangle(
+                     new System.Drawing.SolidBrush((Color)this.plotBackColor_),
+                     (Rectangle)plotAreaBoundingBoxCache_);
+               }
+               else if (this.plotBackBrush_ != null)
+               {
+                  g.FillRectangle(
+                     this.plotBackBrush_.Get((Rectangle)plotAreaBoundingBoxCache_),
+                     (Rectangle)plotAreaBoundingBoxCache_);
+               }
+               else if (this.plotBackImage_ != null)
+               {
+                  g.DrawImage(
+                     Utils.TiledImage(this.plotBackImage_, new Size(
+                        ((Rectangle)plotAreaBoundingBoxCache_).Width,
+                        ((Rectangle)plotAreaBoundingBoxCache_).Height)),
+                     (Rectangle)plotAreaBoundingBoxCache_);
                }
             }
 
-            IDrawable drawable = (IDrawable)drawables_[i];
-            XAxisPosition xap = (XAxisPosition)xAxisPositions_[i];
-            YAxisPosition yap = (YAxisPosition)yAxisPositions_[i];
-
-            PhysicalAxis drawXAxis;
-            PhysicalAxis drawYAxis;
-
-            if (xap == XAxisPosition.Bottom)
+            // draw title
+            float xt = (pXAxis2.PhysicalMax.X + pXAxis2.PhysicalMin.X) / 2.0f;
+            float yt = bounds.Top + this.padding_ - titleExtraOffset;
+            Font scaledFont;
+            if (this.AutoScaleTitle)
             {
-               drawXAxis = pXAxis1;
+               scaledFont = Utils.ScaleFont(titleFont_, scale);
             }
             else
             {
-               drawXAxis = pXAxis2;
+               scaledFont = titleFont_;
             }
+            g.DrawString(title_, scaledFont, this.titleBrush_, new PointF(xt, yt), titleDrawFormat_);
 
-            if (yap == YAxisPosition.Left)
+            //count number of new lines in title.
+            int nlCount = 0;
+            for (int i = 0; i < title_.Length; ++i)
             {
-               drawYAxis = pYAxis1;
+               if (title_[i] == '\n')
+                  nlCount += 1;
             }
-            else
+
+            SizeF s = g.MeasureString(title_, scaledFont);
+            bbTitleCache_ = new Rectangle((int)(xt - s.Width / 2), (int)(yt), (int)(s.Width), (int)(s.Height) * (nlCount + 1));
+
+            // draw drawables..
+            System.Drawing.Drawing2D.SmoothingMode smoothSave = g.SmoothingMode;
+
+            g.SmoothingMode = this.smoothingMode_;
+
+            bool legendDrawn = false;
+
+            for (int i_o = 0; i_o < ordering_.Count; ++i_o)
             {
-               drawYAxis = pYAxis2;
+
+               int i = (int)ordering_.GetByIndex(i_o);
+               double zOrder = (double)ordering_.GetKey(i_o);
+               if (zOrder > this.legendZOrder_)
+               {
+                  // draw legend.
+                  if (!legendDrawn && this.legend_ != null)
+                  {
+                     legend_.Draw(g, legendPosition, this.drawables_, scale);
+                     legendDrawn = true;
+                  }
+               }
+
+               IDrawable drawable = (IDrawable)drawables_[i];
+               XAxisPosition xap = (XAxisPosition)xAxisPositions_[i];
+               YAxisPosition yap = (YAxisPosition)yAxisPositions_[i];
+
+               PhysicalAxis drawXAxis;
+               PhysicalAxis drawYAxis;
+
+               if (xap == XAxisPosition.Bottom)
+               {
+                  drawXAxis = pXAxis1;
+               }
+               else
+               {
+                  drawXAxis = pXAxis2;
+               }
+
+               if (yap == YAxisPosition.Left)
+               {
+                  drawYAxis = pYAxis1;
+               }
+               else
+               {
+                  drawYAxis = pYAxis2;
+               }
+
+               // set the clipping region.. (necessary for zoom)
+               g.Clip = new Region((Rectangle)plotAreaBoundingBoxCache_);
+               // plot.
+               drawable.Draw(g, drawXAxis, drawYAxis);
+               // reset it..
+               g.ResetClip();
             }
 
-            // set the clipping region.. (necessary for zoom)
-            g.Clip = new Region((Rectangle)plotAreaBoundingBoxCache_);
-            // plot.
-            drawable.Draw(g, drawXAxis, drawYAxis);
-            // reset it..
-            g.ResetClip();
-         }
+            if (!legendDrawn && this.legend_ != null)
+            {
+               legend_.Draw(g, legendPosition, this.drawables_, scale);
+            }
 
-         if (!legendDrawn && this.legend_ != null)
-         {
-            legend_.Draw(g, legendPosition, this.drawables_, scale);
-         }
+            // cache the physical axes we used on this draw;
+            this.pXAxis1Cache_ = pXAxis1;
+            this.pYAxis1Cache_ = pYAxis1;
+            this.pXAxis2Cache_ = pXAxis2;
+            this.pYAxis2Cache_ = pYAxis2;
 
-         // cache the physical axes we used on this draw;
-         this.pXAxis1Cache_ = pXAxis1;
-         this.pYAxis1Cache_ = pYAxis1;
-         this.pXAxis2Cache_ = pXAxis2;
-         this.pYAxis2Cache_ = pYAxis2;
+            g.SmoothingMode = smoothSave;
 
-         g.SmoothingMode = smoothSave;
-
-         // now draw axes.
-         Rectangle axisBounds;
-         pXAxis1.Draw(g, out axisBounds);
-         pXAxis2.Draw(g, out axisBounds);
-         pYAxis1.Draw(g, out axisBounds);
-         pYAxis2.Draw(g, out axisBounds);
+            // now draw axes.
+            Rectangle axisBounds;
+            pXAxis1.Draw(g, out axisBounds);
+            pXAxis2.Draw(g, out axisBounds);
+            pYAxis1.Draw(g, out axisBounds);
+            pYAxis2.Draw(g, out axisBounds);
 
 #if DEBUG_BOUNDING_BOXES
 			g.DrawRectangle( new Pen(Color.Orange), (Rectangle) bbXAxis1Cache_ );
@@ -1184,7 +1188,7 @@ namespace Florence
 			//if(this.ShowLegend)g.DrawRectangle( new Pen(Color.Chocolate, 3.0F), (Rectangle) bbLegendCache_);
 			g.DrawRectangle( new Pen(Color.DeepPink,2.0F), (Rectangle) bbTitleCache_);
 #endif
-
+         }
       }
 
 
