@@ -144,27 +144,33 @@ namespace Florence
             Utils.AdapterXBounds(data, leftCutoff, rightCutoff, out minPoint, out maxPoint);
 
             // Translate points to drawing coordinates
-            PointF[] points = new PointF[maxPoint + 1 - minPoint];
-            for (int i = 0; i < points.Length; ++i)
+            int count = maxPoint + 1 - minPoint;
+            if (count >= 2)
             {
-               points[i] = t.Transform(data[minPoint + i]);
-            }
-
-            // Draw lines in one api call
-            try
-            {
-               if (drawShadow)
+               PointF[] points = new PointF[count];
+               for (int i = 0; i < points.Length; ++i)
                {
-                  PointF[] shadowPoints = new PointF[points.Length];
-                  for (int i = 0; i < shadowPoints.Length; ++i)
-                  {
-                     shadowPoints[i].X = points[i].X + ShadowOffset.X;
-                     shadowPoints[i].Y = points[i].Y + ShadowOffset.Y;
-                  }
-                  g.DrawLines(shadowPen, shadowPoints);
+                  points[i] = t.Transform(data[minPoint + i]);
                }
-               g.DrawLines(Pen, points);
-            } catch (System.OverflowException) { }
+
+               // Draw lines in one api call
+               try
+               {
+                  if (drawShadow)
+                  {
+                     PointF[] shadowPoints = new PointF[points.Length];
+                     for (int i = 0; i < shadowPoints.Length; ++i)
+                     {
+                        shadowPoints[i].X = points[i].X + ShadowOffset.X;
+                        shadowPoints[i].Y = points[i].Y + ShadowOffset.Y;
+                     }
+                     g.DrawLines(shadowPen, shadowPoints);
+                  }
+                  g.DrawLines(Pen, points);
+               }
+               catch (System.OverflowException) { }
+               catch (System.ArgumentException) { }
+            }
 			}
 		}
 
