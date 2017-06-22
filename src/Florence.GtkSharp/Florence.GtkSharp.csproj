@@ -20,6 +20,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DebugType>full</DebugType>
     <PlatformTarget>x86</PlatformTarget>
+    <LangVersion>5</LangVersion>
     <ErrorReport>none</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <NoWarn>219;414;612</NoWarn>
@@ -33,6 +34,7 @@
     <Optimize>true</Optimize>
     <DebugType>none</DebugType>
     <PlatformTarget>x86</PlatformTarget>
+    <LangVersion>5</LangVersion>
     <ErrorReport>none</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <NoWarn>219;414;612</NoWarn>
